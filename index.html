@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Inline SVG favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2285%22>💍</text></svg>" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -10,57 +9,18 @@
     <meta name="description" content="Knot - Matches that lead to vows" />
     <title>Knot</title>
 
-    <!-- Import maps -->
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://aistudiocdn.com/react@^19.2.0",
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-        "react/": "https://aistudiocdn.com/react@^19.2.0/",
-        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.25.0",
-        "cors": "https://esm.sh/cors@^2.8.5",
-        "axios": "https://esm.sh/axios@^1.13.2",
-        "express": "https://esm.sh/express@^5.2.1",
-        "crypto": "https://esm.sh/crypto@^1.0.1"
-      }
-    }
-    </script>
-
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Lora', 'serif'],
-            },
-            colors: {
-              'brand-primary': '#4A0D67', // Deep Purple
-              'brand-secondary': '#7B288D', // Lighter Purple
-              'brand-accent': '#F4D35E',   // Warm Yellow
-              'brand-dark': '#1E1E24',     // Almost Black
-              'brand-text': '#333333',     // Dark Gray for text
-              'brand-light': '#F8F4F9',    // Very light purple/gray
-            },
-          },
-        },
-      }
-    </script>
-
-    <!-- Paystack -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Custom styles -->
     <style>
       body {
         font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #F8F4F9; /* brand-light */
       }
       .hide-scrollbar::-webkit-scrollbar {
         display: none;
@@ -70,12 +30,11 @@
         scrollbar-width: none;
       }
     </style>
-
-    <link rel="stylesheet" href="/index.css">
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

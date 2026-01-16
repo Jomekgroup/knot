@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Match, User, Message } from '../types';
 import { generateConversationStarters } from '../services/geminiService';
 import { generateAIReply } from '../services/matchingService';
 import { db } from '../services/databaseService';
 import { SparklesIcon } from './icons/SparklesIcon';
-import SendIcon from './icons/SendIcon';
+import { SendIcon } from './icons/SendIcon'; // FIX: Added curly braces for Named Import
 import { VideoCameraIcon } from './icons/VideoCameraIcon';
 import { useToast } from './feedback/useToast';
 
@@ -25,11 +24,19 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
   const chatEndRef = useRef<HTMLDivElement>(null);
   const { addToast } = useToast();
 
+  // Safety fallback for images
+  const matchImage = match?.profileImageUrls?.[0] || 'https://via.placeholder.com/150?text=No+Image';
+
   useEffect(() => {
     const loadHistory = async () => {
         const history = await db.getMessages(match.id);
         if (history.length === 0) {
-            const initialMsg: Message = { id: '1', senderId: match.id, text: `Hey ${user.name}! It's great to connect.`, timestamp: new Date() };
+            const initialMsg: Message = { 
+              id: '1', 
+              senderId: match.id, 
+              text: `Hey ${user.name}! It's great to connect.`, 
+              timestamp: new Date() 
+            };
             setMessages([initialMsg]);
             db.sendMessage(match.id, initialMsg);
         } else {
@@ -37,7 +44,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
         }
     };
     loadHistory();
-  }, [match.id]);
+  }, [match.id, match.name, user.name]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,9 +77,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
     setNewMessage('');
     await db.sendMessage(match.id, message);
 
-    // Backend Simulation: Auto-reply
     setIsTyping(true);
-    const historyStrings = [...messages, message].map(m => `${m.senderId === user.id ? user.name : match.name}: ${m.text}`);
+    const historyStrings = [...messages, message].map(m => 
+      `${m.senderId === user.id ? user.name : match.name}: ${m.text}`
+    );
     
     setTimeout(async () => {
         const replyText = await generateAIReply(match, historyStrings);
@@ -94,7 +102,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-screen">
+    <div className="flex flex-col h-screen max-h-screen bg-white">
       {/* Header */}
       <div className="flex items-center p-3 border-b border-gray-200 bg-white sticky top-0 z-10 shadow-sm">
         <button onClick={onBack} className="text-gray-600 mr-3 p-1 rounded-full hover:bg-gray-100">
@@ -102,7 +110,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <img src={match.profileImageUrls[0]} alt={match.name} className="w-10 h-10 rounded-full object-cover" />
+        {/* FIX: Safe image access */}
+        <img src={matchImage} alt={match.name} className="w-10 h-10 rounded-full object-cover" />
         <div className="ml-3 flex-1">
           <h2 className="font-bold text-lg text-brand-dark">{match.name}</h2>
           <p className="text-xs text-gray-500">{isTyping ? 'Typing...' : 'Online'}</p>
@@ -117,7 +126,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
         <div className="space-y-4">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex items-end gap-2 ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}>
-              {msg.senderId !== user.id && <img src={match.profileImageUrls[0]} alt={match.name} className="w-6 h-6 rounded-full self-start" />}
+              {/* FIX: Safe image access */}
+              {msg.senderId !== user.id && <img src={matchImage} alt={match.name} className="w-6 h-6 rounded-full self-start" />}
               <div
                 className={`max-w-[75%] px-4 py-2 rounded-2xl ${
                   msg.senderId === user.id
@@ -131,7 +141,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
           ))}
           {isTyping && (
              <div className="flex items-center gap-2">
-                <img src={match.profileImageUrls[0]} alt={match.name} className="w-6 h-6 rounded-full" />
+                {/* FIX: Safe image access */}
+                <img src={matchImage} alt={match.name} className="w-6 h-6 rounded-full" />
                 <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-none border border-gray-200 shadow-sm flex gap-1">
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
@@ -143,7 +154,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
         <div ref={chatEndRef} />
       </div>
 
-      {/* Input */}
+      {/* Input UI */}
       <div className="bg-white border-t border-gray-200 p-3 fixed bottom-20 left-0 right-0 max-w-md mx-auto">
         {starters.length > 0 && (
           <div className="mb-2 flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
@@ -168,7 +179,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ match, user, onBack, onStartCal
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder="Type a message..."
-            className="flex-1 border border-gray-300 rounded-full py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-brand-secondary bg-gray-50"
+            className="flex-1 border border-gray-300 rounded-full py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-brand-secondary bg-gray-50 text-brand-dark"
           />
           <button onClick={handleSendMessage} className="bg-brand-primary text-white rounded-full p-2.5 hover:bg-brand-secondary transition-transform active:scale-95">
             <SendIcon className="w-5 h-5" />

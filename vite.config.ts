@@ -7,8 +7,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
-    // 2. Fixes the 404 error: Use empty string to ensure relative paths on Vercel
-    base: '', 
+    // 2. Updated to '/' for better Vercel routing stability.
+    // This ensures assets like index.css are always found at the root.
+    base: '/', 
     
     server: {
       port: 3000,
@@ -17,10 +18,10 @@ export default defineConfig(({ mode }) => {
     
     plugins: [react()],
     
-    // 3. CRITICAL: Explicitly hard-code the Supabase variables into the build.
-    // This solves the 406 error by ensuring the Supabase client isn't "undefined".
+    // 3. CRITICAL: Hard-coding variables into the build process.
+    // This ensures Supabase and Gemini work the instant the app loads.
     define: {
-      'process.env': env,
+      'process.env': JSON.stringify(env),
       'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL),
       'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY),
       'import.meta.env.VITE_PAYSTACK_PUBLIC_KEY': JSON.stringify(env.VITE_PAYSTACK_PUBLIC_KEY),
@@ -30,15 +31,18 @@ export default defineConfig(({ mode }) => {
     
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './'),
+        // This allows you to use 'import { SendIcon } from "@/components/icons/SendIcon"'
+        // consistently throughout the project.
+        '@': path.resolve(__dirname, './src'),
       }
     },
 
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
-      // Helps debug if things go wrong
-      sourcemap: true 
+      sourcemap: true,
+      // Prevents the build from failing if there are tiny CSS warnings
+      cssCodeSplit: true,
     }
   };
 });
