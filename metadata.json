@@ -1,0 +1,8 @@
+{
+  "name": "Knot",
+  "description": "A mobile-first, AI-powered matchmaking app connecting individuals worldwide who are seriously seeking marriage-oriented relationships. The platform uses advanced AI to prioritize compatibility, shared values, and commitment readiness.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
