@@ -1,6 +1,8 @@
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+// Use the '@' alias we created to avoid relative path confusion
+import { SendIcon } from '@/components/icons/SendIcon';
 
 export default defineConfig(({ mode }) => {
   // 1. Load environment variables from the system (Vercel)
