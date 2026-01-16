@@ -3,12 +3,12 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current working directory.
+  // 1. Load environment variables from the system (Vercel)
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
-    // Fixes the 404 CSS/JS errors on Vercel
-    base: './', 
+    // 2. Fixes the 404 error: Use empty string to ensure relative paths on Vercel
+    base: '', 
     
     server: {
       port: 3000,
@@ -17,7 +17,8 @@ export default defineConfig(({ mode }) => {
     
     plugins: [react()],
     
-    // Explicitly mapping variables ensures they are available in the production build
+    // 3. CRITICAL: Explicitly hard-code the Supabase variables into the build.
+    // This solves the 406 error by ensuring the Supabase client isn't "undefined".
     define: {
       'process.env': env,
       'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL),
@@ -29,16 +30,15 @@ export default defineConfig(({ mode }) => {
     
     resolve: {
       alias: {
-        // Allows you to use '@/' to refer to your root directory
         '@': path.resolve(__dirname, './'),
       }
     },
 
     build: {
-      // Ensures that assets are bundled correctly for Vercel
       outDir: 'dist',
       assetsDir: 'assets',
-      sourcemap: false
+      // Helps debug if things go wrong
+      sourcemap: true 
     }
   };
 });
