@@ -7,25 +7,38 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
-    // 1. Fixes the 404 error by using relative paths
+    // Fixes the 404 CSS/JS errors on Vercel
     base: './', 
     
     server: {
       port: 3000,
       host: '0.0.0.0',
     },
+    
     plugins: [react()],
     
-    // 2. Ensures environment variables are available
+    // Explicitly mapping variables ensures they are available in the production build
     define: {
       'process.env': env,
-      'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL),
+      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY),
+      'import.meta.env.VITE_PAYSTACK_PUBLIC_KEY': JSON.stringify(env.VITE_PAYSTACK_PUBLIC_KEY),
+      'import.meta.env.VITE_BACKEND_URL': JSON.stringify(env.VITE_BACKEND_URL),
+      'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY),
     },
     
     resolve: {
       alias: {
+        // Allows you to use '@/' to refer to your root directory
         '@': path.resolve(__dirname, './'),
       }
+    },
+
+    build: {
+      // Ensures that assets are bundled correctly for Vercel
+      outDir: 'dist',
+      assetsDir: 'assets',
+      sourcemap: false
     }
   };
 });
