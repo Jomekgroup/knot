@@ -5,7 +5,7 @@ import { generateConversationStarters } from '../services/geminiService';
 import { generateAIReply } from '../services/matchingService';
 import { db } from '../services/databaseService';
 import { SparklesIcon } from './icons/SparklesIcon';
-import { SendIcon } from './icons/SendIcon';
+import SendIcon from './icons/SendIcon';
 import { VideoCameraIcon } from './icons/VideoCameraIcon';
 import { useToast } from './feedback/useToast';
 
