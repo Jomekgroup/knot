@@ -6,8 +6,28 @@ import { supabase } from './supabaseClient';
  */
 export const db = {
   /**
+   * FIX FOR WHITE SCREEN: Fetches all matches/profiles to display on the main screen.
+   */
+  getMatches: async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('❌ Error fetching matches:', error.message);
+        return [];
+      }
+      return data || [];
+    } catch (err) {
+      console.error('💥 Unexpected error in getMatches:', err);
+      return [];
+    }
+  },
+
+  /**
    * Fetches a user's profile from the public.profiles table.
-   * Prevents 406 errors and handles empty results gracefully.
    */
   getUserProfile: async (userId: string) => {
     try {
@@ -24,7 +44,7 @@ export const db = {
           created_at
         `)
         .eq('id', userId)
-        .maybeSingle(); // FIX: Safely returns null instead of crashing if profile doesn't exist
+        .maybeSingle(); 
 
       if (error) {
         console.error('❌ Supabase Error:', error.message);
@@ -91,7 +111,7 @@ export const db = {
           match_id: matchId,
           sender_id: message.senderId,
           content: message.text,
-          created_at: message.timestamp.toISOString()
+          created_at: new Date(message.timestamp).toISOString()
         }]);
 
       if (error) throw error;
